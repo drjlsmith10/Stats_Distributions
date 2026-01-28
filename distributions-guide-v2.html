@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Guide to Probability Distributions</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin: 40px 0 20px;
+            padding-left: 15px;
+            border-left: 4px solid #00d4ff;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .card-icon {
+            font-size: 2rem;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .card-subtitle {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .example-box {
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 3px solid #00d4ff;
+        }
+        
+        .example-box strong {
+            color: #00d4ff;
+        }
+        
+        .params-section {
+            background: rgba(124, 58, 237, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+        
+        .params-title {
+            font-weight: 600;
+            color: #a78bfa;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .param-row {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 15px;
+            margin: 12px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            align-items: start;
+        }
+        
+        .param-symbol-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .param-greek {
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .param-name-small {
+            font-size: 0.7rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .param-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .param-full-name {
+            font-weight: 600;
+            color: #e8e8e8;
+            font-size: 1rem;
+        }
+        
+        .param-definition {
+            color: #aaa;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .param-relationship {
+            background: rgba(0, 212, 255, 0.15);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #00d4ff;
+            margin-top: 4px;
+        }
+        
+        .param-relationship::before {
+            content: "→ ";
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 180px;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        
+        .formula-box {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .formula-row {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .formula-item {
+            text-align: center;
+        }
+        
+        .formula-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        
+        .formula-value {
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        
+        .key-insight {
+            background: linear-gradient(90deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2));
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .key-insight::before {
+            content: "💡 ";
+        }
+        
+        .discrete-badge {
+            background: #f59e0b;
+            color: #000;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .continuous-badge {
+            background: #10b981;
+            color: #000;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .notation-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .notation-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #00d4ff;
+        }
+        
+        .notation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .notation-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+        
+        .notation-symbol {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #a78bfa;
+            min-width: 30px;
+        }
+        
+        @media (max-width: 550px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .param-row {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Probability Distributions</h1>
+        <p class="subtitle">A Visual Guide for Statistics Students</p>
+        
+        <div class="notation-box">
+            <div class="notation-title">Common Greek Letters in Statistics</div>
+            <div class="notation-grid">
+                <div class="notation-item">
+                    <span class="notation-symbol">μ</span>
+                    <span>mu = population mean</span>
+                </div>
+                <div class="notation-item">
+                    <span class="notation-symbol">σ</span>
+                    <span>sigma = standard deviation</span>
+                </div>
+                <div class="notation-item">
+                    <span class="notation-symbol">σ²</span>
+                    <span>sigma squared = variance</span>
+                </div>
+                <div class="notation-item">
+                    <span class="notation-symbol">λ</span>
+                    <span>lambda = rate parameter</span>
+                </div>
+                <div class="notation-item">
+                    <span class="notation-symbol">θ</span>
+                    <span>theta = scale parameter</span>
+                </div>
+                <div class="notation-item">
+                    <span class="notation-symbol">α, β</span>
+                    <span>alpha, beta = shape parameters</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <span class="discrete-badge">DISCRETE</span>
+                <span>Counts whole numbers (0, 1, 2, 3...)</span>
+            </div>
+            <div class="legend-item">
+                <span class="continuous-badge">CONTINUOUS</span>
+                <span>Any value in a range (1.5, 2.73, etc.)</span>
+            </div>
+        </div>
+
+        <h2 class="section-title">Discrete Distributions</h2>
+        <div class="grid">
+            <!-- Bernoulli -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🎯</span>
+                    <div>
+                        <div class="card-title">Bernoulli Distribution</div>
+                        <div class="card-subtitle"><span class="discrete-badge">DISCRETE</span> Single yes/no trial</div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <strong>Real World:</strong> A single coin flip, one free throw attempt, whether one email is spam or not
+                </div>
+                
+                <div class="params-section">
+                    <div class="params-title">Parameters</div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">p</div>
+                            <div class="param-name-small">"p"</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Probability of Success</div>
+                            <div class="param-definition">The likelihood that a single trial results in a "success" (the outcome you're counting). Must be between 0 and 1.</div>
+                            <div class="param-relationship">Directly determines both the mean (E[X] = p) and the shape of the distribution. Higher p shifts probability mass toward 1.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">q</div>
+                            <div class="param-name-small">"q"</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Probability of Failure</div>
+                            <div class="param-definition">The complement of p. Always equals (1 - p). Sometimes written explicitly in formulas.</div>
+                            <div class="param-relationship">q = 1 - p. Used in variance calculation: Var(X) = p(1-p) = pq</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formula-box">
+                    <div class="formula-row">
+                        <div class="formula-item">
+                            <div class="formula-label">Mean</div>
+                            <div class="formula-value">E[X] = p</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Variance</div>
+                            <div class="formula-value">Var(X) = p(1-p)</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Outcomes</div>
+                            <div class="formula-value">X ∈ {0, 1}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="bernoulliChart"></canvas>
+                </div>
+                
+                <div class="key-insight">
+                    The building block of all discrete distributions. Only two outcomes: success (1) or failure (0).
+                </div>
+            </div>
+
+            <!-- Binomial -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🎲</span>
+                    <div>
+                        <div class="card-title">Binomial Distribution</div>
+                        <div class="card-subtitle"><span class="discrete-badge">DISCRETE</span> Count of successes in n trials</div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <strong>Real World:</strong> Number of heads in 10 coin flips, patients responding to treatment out of 50 enrolled, defective items in a batch
+                </div>
+                
+                <div class="params-section">
+                    <div class="params-title">Parameters</div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">n</div>
+                            <div class="param-name-small">"n"</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Number of Trials</div>
+                            <div class="param-definition">The fixed number of independent Bernoulli trials performed. Must be a positive integer.</div>
+                            <div class="param-relationship">Determines the range of possible outcomes (0 to n) and scales both mean and variance. Larger n spreads out the distribution.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">p</div>
+                            <div class="param-name-small">"p"</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Probability of Success (per trial)</div>
+                            <div class="param-definition">The probability that any single trial results in success. Same for every trial (identical). Between 0 and 1.</div>
+                            <div class="param-relationship">Controls the center and skewness. p = 0.5 gives a symmetric distribution; p ≠ 0.5 creates skew toward the less likely outcome.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formula-box">
+                    <div class="formula-row">
+                        <div class="formula-item">
+                            <div class="formula-label">Mean</div>
+                            <div class="formula-value">E[X] = np</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Variance</div>
+                            <div class="formula-value">Var(X) = np(1-p)</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Outcomes</div>
+                            <div class="formula-value">X ∈ {0, 1, 2, ..., n}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="binomialChart"></canvas>
+                </div>
+                
+                <div class="key-insight">
+                    Bernoulli repeated n times! The sum of n independent Bernoulli(p) random variables. Approaches Normal when n is large.
+                </div>
+            </div>
+
+            <!-- Poisson -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📧</span>
+                    <div>
+                        <div class="card-title">Poisson Distribution</div>
+                        <div class="card-subtitle"><span class="discrete-badge">DISCRETE</span> Count of rare events</div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <strong>Real World:</strong> Emails per hour, car accidents per month, adverse events in a clinical trial, mutations per DNA segment
+                </div>
+                
+                <div class="params-section">
+                    <div class="params-title">Parameters</div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">λ</div>
+                            <div class="param-name-small">lambda</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Rate Parameter (Average Rate of Occurrence)</div>
+                            <div class="param-definition">The expected number of events in the given time period or space. Must be positive (λ > 0). Often estimated from historical data as total events / total time.</div>
+                            <div class="param-relationship">Uniquely determines BOTH mean AND variance (they're equal!). Larger λ shifts the distribution right and makes it more symmetric (approaches Normal).</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formula-box">
+                    <div class="formula-row">
+                        <div class="formula-item">
+                            <div class="formula-label">Mean</div>
+                            <div class="formula-value">E[X] = λ</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Variance</div>
+                            <div class="formula-value">Var(X) = λ</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Outcomes</div>
+                            <div class="formula-value">X ∈ {0, 1, 2, 3, ...}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="poissonChart"></canvas>
+                </div>
+                
+                <div class="key-insight">
+                    Only ONE parameter controls everything! Mean = Variance = λ. Use when counting events in fixed intervals where events occur independently.
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Continuous Distributions</h2>
+        <div class="grid">
+            <!-- Normal -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔔</span>
+                    <div>
+                        <div class="card-title">Normal (Gaussian) Distribution</div>
+                        <div class="card-subtitle"><span class="continuous-badge">CONTINUOUS</span> The "bell curve"</div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <strong>Real World:</strong> Heights, blood pressure, test scores, measurement errors, IQ scores
+                </div>
+                
+                <div class="params-section">
+                    <div class="params-title">Parameters</div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">μ</div>
+                            <div class="param-name-small">mu</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Mean (Location Parameter)</div>
+                            <div class="param-definition">The center of the distribution where the peak occurs. Can be any real number (negative, zero, or positive). Also equals the median and mode.</div>
+                            <div class="param-relationship">Shifts the entire bell curve left or right along the x-axis without changing its shape. The distribution is symmetric around μ.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">σ</div>
+                            <div class="param-name-small">sigma</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Standard Deviation (Scale Parameter)</div>
+                            <div class="param-definition">Measures the spread or dispersion around the mean. Must be positive (σ > 0). Roughly, the average distance from the mean.</div>
+                            <div class="param-relationship">Controls the width of the bell. Larger σ = wider, flatter curve. Smaller σ = narrower, taller peak. 68-95-99.7 rule: 68% within ±1σ, 95% within ±2σ, 99.7% within ±3σ.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">σ²</div>
+                            <div class="param-name-small">sigma²</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Variance</div>
+                            <div class="param-definition">The square of standard deviation. Often used in formulas and theoretical work. Same interpretation as σ but in squared units.</div>
+                            <div class="param-relationship">Var(X) = σ². Some textbooks parameterize Normal with (μ, σ²) instead of (μ, σ).</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formula-box">
+                    <div class="formula-row">
+                        <div class="formula-item">
+                            <div class="formula-label">Mean</div>
+                            <div class="formula-value">E[X] = μ</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Variance</div>
+                            <div class="formula-value">Var(X) = σ²</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Notation</div>
+                            <div class="formula-value">X ~ N(μ, σ²)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="normalChart"></canvas>
+                </div>
+                
+                <div class="key-insight">
+                    The most important distribution! Central Limit Theorem: sample means are approximately Normal regardless of the original distribution.
+                </div>
+            </div>
+
+            <!-- Exponential -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">⏱️</span>
+                    <div>
+                        <div class="card-title">Exponential Distribution</div>
+                        <div class="card-subtitle"><span class="continuous-badge">CONTINUOUS</span> Time until next event</div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <strong>Real World:</strong> Time between customer arrivals, time until equipment failure, time to next earthquake, radioactive decay
+                </div>
+                
+                <div class="params-section">
+                    <div class="params-title">Parameters</div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">λ</div>
+                            <div class="param-name-small">lambda</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Rate Parameter</div>
+                            <div class="param-definition">The average number of events per unit time. Must be positive (λ > 0). If 5 customers arrive per hour on average, λ = 5.</div>
+                            <div class="param-relationship">Higher λ = events happen more frequently = shorter waiting times = curve decays faster. Mean waiting time = 1/λ.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">β</div>
+                            <div class="param-name-small">beta</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Scale Parameter (Alternative Parameterization)</div>
+                            <div class="param-definition">Some textbooks use β = 1/λ instead. This represents the mean waiting time directly. Must be positive.</div>
+                            <div class="param-relationship">β = 1/λ = E[X]. Using β, the mean IS the parameter. Watch which parameterization your textbook uses!</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formula-box">
+                    <div class="formula-row">
+                        <div class="formula-item">
+                            <div class="formula-label">Mean</div>
+                            <div class="formula-value">E[X] = 1/λ</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Variance</div>
+                            <div class="formula-value">Var(X) = 1/λ²</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Notation</div>
+                            <div class="formula-value">X ~ Exp(λ)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="exponentialChart"></canvas>
+                </div>
+                
+                <div class="key-insight">
+                    "Memoryless" property: P(X > s+t | X > s) = P(X > t). Past waiting doesn't affect future probability. Continuous analog of geometric distribution.
+                </div>
+            </div>
+
+            <!-- Uniform -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📊</span>
+                    <div>
+                        <div class="card-title">Uniform Distribution</div>
+                        <div class="card-subtitle"><span class="continuous-badge">CONTINUOUS</span> Equal probability everywhere</div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <strong>Real World:</strong> Random number generators, rounding errors, arrival time within a fixed window, spinning a fair spinner
+                </div>
+                
+                <div class="params-section">
+                    <div class="params-title">Parameters</div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">a</div>
+                            <div class="param-name-small">"a"</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Minimum (Lower Bound)</div>
+                            <div class="param-definition">The smallest possible value. No outcomes can occur below this point. Can be any real number.</div>
+                            <div class="param-relationship">Sets the left edge of the "box." Along with b, determines both the location (center) and scale (width) of the distribution.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">b</div>
+                            <div class="param-name-small">"b"</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Maximum (Upper Bound)</div>
+                            <div class="param-definition">The largest possible value. No outcomes can occur above this point. Must be greater than a (b > a).</div>
+                            <div class="param-relationship">Sets the right edge. The height of the PDF = 1/(b-a), ensuring total area = 1. Wider range = lower height.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formula-box">
+                    <div class="formula-row">
+                        <div class="formula-item">
+                            <div class="formula-label">Mean</div>
+                            <div class="formula-value">E[X] = (a+b)/2</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Variance</div>
+                            <div class="formula-value">Var(X) = (b-a)²/12</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Notation</div>
+                            <div class="formula-value">X ~ U(a, b)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="uniformChart"></canvas>
+                </div>
+                
+                <div class="key-insight">
+                    The "maximum ignorance" distribution. When you only know the range but have no reason to favor any value. Also called rectangular distribution.
+                </div>
+            </div>
+
+            <!-- Gamma -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔄</span>
+                    <div>
+                        <div class="card-title">Gamma Distribution</div>
+                        <div class="card-subtitle"><span class="continuous-badge">CONTINUOUS</span> Sum of exponentials</div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <strong>Real World:</strong> Total wait time for k events, insurance claim amounts, rainfall totals, hospital length of stay
+                </div>
+                
+                <div class="params-section">
+                    <div class="params-title">Parameters (Shape-Scale Parameterization)</div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">k</div>
+                            <div class="param-name-small">or α</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Shape Parameter</div>
+                            <div class="param-definition">Controls the shape of the distribution. Must be positive (k > 0). When k is a positive integer, represents waiting for k events.</div>
+                            <div class="param-relationship">k = 1 gives Exponential. As k increases, distribution becomes more symmetric and bell-shaped. Small k = highly right-skewed.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">θ</div>
+                            <div class="param-name-small">theta</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Scale Parameter</div>
+                            <div class="param-definition">Controls the spread/scale. Must be positive (θ > 0). Represents the average time between events (= 1/rate).</div>
+                            <div class="param-relationship">Larger θ stretches the distribution rightward. Mean = kθ. If using rate parameterization, β = 1/θ.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">β</div>
+                            <div class="param-name-small">beta</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Rate Parameter (Alternative)</div>
+                            <div class="param-definition">Some texts use (α, β) where β = 1/θ is the rate. Check your textbook's convention!</div>
+                            <div class="param-relationship">With rate parameterization: Mean = α/β, Variance = α/β²</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formula-box">
+                    <div class="formula-row">
+                        <div class="formula-item">
+                            <div class="formula-label">Mean</div>
+                            <div class="formula-value">E[X] = kθ</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Variance</div>
+                            <div class="formula-value">Var(X) = kθ²</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Notation</div>
+                            <div class="formula-value">X ~ Gamma(k, θ)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="gammaChart"></canvas>
+                </div>
+                
+                <div class="key-insight">
+                    Extremely flexible! Special cases: k=1 is Exponential, k=n/2 & θ=2 is Chi-squared. Great for modeling positive, right-skewed data.
+                </div>
+            </div>
+
+            <!-- Weibull -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">⚙️</span>
+                    <div>
+                        <div class="card-title">Weibull Distribution</div>
+                        <div class="card-subtitle"><span class="continuous-badge">CONTINUOUS</span> Failure/survival time</div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <strong>Real World:</strong> Product lifetimes, time-to-event in survival analysis, wind speed modeling, material strength
+                </div>
+                
+                <div class="params-section">
+                    <div class="params-title">Parameters</div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">k</div>
+                            <div class="param-name-small">or β</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Shape Parameter</div>
+                            <div class="param-definition">Controls the failure rate behavior over time. Must be positive (k > 0). The key parameter for reliability analysis.</div>
+                            <div class="param-relationship">k < 1: "Infant mortality" (failure rate decreases over time). k = 1: Random failures (constant rate = Exponential). k > 1: "Wear-out" (failure rate increases). k ≈ 3.6: Approximates Normal.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">λ</div>
+                            <div class="param-name-small">lambda</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Scale Parameter (Characteristic Life)</div>
+                            <div class="param-definition">The time at which 63.2% of units have failed. Must be positive (λ > 0). Also called η (eta) in some texts.</div>
+                            <div class="param-relationship">Stretches or compresses the time axis. Larger λ = longer lifetimes. At time t = λ, survival probability = e⁻¹ ≈ 0.368.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formula-box">
+                    <div class="formula-row">
+                        <div class="formula-item">
+                            <div class="formula-label">Mean</div>
+                            <div class="formula-value">E[X] = λ·Γ(1+1/k)</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Special Case</div>
+                            <div class="formula-value">k=1 → Exponential</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Notation</div>
+                            <div class="formula-value">X ~ Weibull(k, λ)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="weibullChart"></canvas>
+                </div>
+                
+                <div class="key-insight">
+                    The reliability engineer's workhorse! Shape parameter tells the whole story: is failure rate increasing, decreasing, or constant over time?
+                </div>
+            </div>
+
+            <!-- Triangular -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📐</span>
+                    <div>
+                        <div class="card-title">Triangular Distribution</div>
+                        <div class="card-subtitle"><span class="continuous-badge">CONTINUOUS</span> Min, mode, max estimate</div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <strong>Real World:</strong> Project duration estimates (PERT), expert elicitation, Monte Carlo simulations, business forecasting
+                </div>
+                
+                <div class="params-section">
+                    <div class="params-title">Parameters</div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">a</div>
+                            <div class="param-name-small">"a"</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Minimum (Best Case / Optimistic)</div>
+                            <div class="param-definition">The smallest possible value. In project management, the optimistic estimate if everything goes perfectly.</div>
+                            <div class="param-relationship">Sets the left vertex of the triangle. Probability density = 0 at this point and increases linearly toward the mode.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">c</div>
+                            <div class="param-name-small">"c"</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Mode (Most Likely)</div>
+                            <div class="param-definition">The most probable value (peak of triangle). Must satisfy a ≤ c ≤ b. This is NOT the mean!</div>
+                            <div class="param-relationship">Sets the peak of the triangle and controls skewness. c closer to a = right-skewed. c closer to b = left-skewed. c = (a+b)/2 = symmetric.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="param-row">
+                        <div class="param-symbol-box">
+                            <div class="param-greek">b</div>
+                            <div class="param-name-small">"b"</div>
+                        </div>
+                        <div class="param-details">
+                            <div class="param-full-name">Maximum (Worst Case / Pessimistic)</div>
+                            <div class="param-definition">The largest possible value. In project management, the pessimistic estimate if things go wrong.</div>
+                            <div class="param-relationship">Sets the right vertex. Combined with a and c, fully determines the triangle shape and all distribution properties.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formula-box">
+                    <div class="formula-row">
+                        <div class="formula-item">
+                            <div class="formula-label">Mean</div>
+                            <div class="formula-value">E[X] = (a+b+c)/3</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Mode</div>
+                            <div class="formula-value">Mode = c</div>
+                        </div>
+                        <div class="formula-item">
+                            <div class="formula-label">Notation</div>
+                            <div class="formula-value">X ~ Tri(a, c, b)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="triangularChart"></canvas>
+                </div>
+                
+                <div class="key-insight">
+                    Perfect for "three-point estimates" when data is scarce. Just need to ask: what's the minimum, maximum, and most likely value?
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        Chart.defaults.color = '#e8e8e8';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        
+        // Bernoulli Chart (p = 0.7)
+        new Chart(document.getElementById('bernoulliChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Failure (X=0)', 'Success (X=1)'],
+                datasets: [{
+                    data: [0.3, 0.7],
+                    backgroundColor: ['rgba(239, 68, 68, 0.7)', 'rgba(16, 185, 129, 0.7)'],
+                    borderColor: ['#ef4444', '#10b981'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'p = 0.7 → P(X=1) = 0.7, P(X=0) = 0.3', color: '#888' }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 1, title: { display: true, text: 'P(X=x)' }}
+                }
+            }
+        });
+
+        // Binomial Chart (n=10, p=0.5)
+        function binomialPMF(n, p) {
+            const result = [];
+            for (let k = 0; k <= n; k++) {
+                let coeff = 1;
+                for (let i = 0; i < k; i++) coeff = coeff * (n - i) / (i + 1);
+                result.push(coeff * Math.pow(p, k) * Math.pow(1 - p, n - k));
+            }
+            return result;
+        }
+        
+        new Chart(document.getElementById('binomialChart'), {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: 11}, (_, i) => i),
+                datasets: [{
+                    data: binomialPMF(10, 0.5),
+                    backgroundColor: 'rgba(124, 58, 237, 0.7)',
+                    borderColor: '#7c3aed',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'n=10, p=0.5 → Mean=np=5', color: '#888' }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'k (# of successes)' }},
+                    y: { beginAtZero: true, title: { display: true, text: 'P(X=k)' }}
+                }
+            }
+        });
+
+        // Poisson Chart (λ = 4)
+        function poissonPMF(lambda, maxK) {
+            const result = [];
+            for (let k = 0; k <= maxK; k++) {
+                let factorial = 1;
+                for (let i = 2; i <= k; i++) factorial *= i;
+                result.push(Math.exp(-lambda) * Math.pow(lambda, k) / factorial);
+            }
+            return result;
+        }
+        
+        new Chart(document.getElementById('poissonChart'), {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: 13}, (_, i) => i),
+                datasets: [{
+                    data: poissonPMF(4, 12),
+                    backgroundColor: 'rgba(0, 212, 255, 0.7)',
+                    borderColor: '#00d4ff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'λ=4 → Mean=4, Var=4', color: '#888' }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'k (count of events)' }},
+                    y: { beginAtZero: true, title: { display: true, text: 'P(X=k)' }}
+                }
+            }
+        });
+
+        // Normal Chart
+        function normalPDF(x, mu, sigma) {
+            return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+        }
+        
+        const normalX = Array.from({length: 100}, (_, i) => -4 + i * 0.08);
+        
+        new Chart(document.getElementById('normalChart'), {
+            type: 'line',
+            data: {
+                labels: normalX.map(x => x.toFixed(1)),
+                datasets: [{
+                    data: normalX.map(x => normalPDF(x, 0, 1)),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.3)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'μ=0, σ=1 (Standard Normal Z)', color: '#888' }
+                },
+                scales: {
+                    x: { ticks: { maxTicksLimit: 9 }, title: { display: true, text: 'x (or z-score)' }},
+                    y: { beginAtZero: true, title: { display: true, text: 'f(x)' }}
+                }
+            }
+        });
+
+        // Exponential Chart
+        const expX = Array.from({length: 50}, (_, i) => i * 0.1);
+        
+        new Chart(document.getElementById('exponentialChart'), {
+            type: 'line',
+            data: {
+                labels: expX.map(x => x.toFixed(1)),
+                datasets: [{
+                    data: expX.map(x => x >= 0 ? Math.exp(-x) : 0),
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.3)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'λ=1 → Mean=1/λ=1', color: '#888' }
+                },
+                scales: {
+                    x: { ticks: { maxTicksLimit: 10 }, title: { display: true, text: 'x (time until event)' }},
+                    y: { beginAtZero: true, title: { display: true, text: 'f(x)' }}
+                }
+            }
+        });
+
+        // Uniform Chart
+        const uniformX = Array.from({length: 70}, (_, i) => -1 + i * 0.1);
+        
+        new Chart(document.getElementById('uniformChart'), {
+            type: 'line',
+            data: {
+                labels: uniformX.map(x => x.toFixed(1)),
+                datasets: [{
+                    data: uniformX.map(x => (x >= 0 && x <= 4) ? 0.25 : 0),
+                    borderColor: '#ec4899',
+                    backgroundColor: 'rgba(236, 72, 153, 0.3)',
+                    fill: true,
+                    stepped: true,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'a=0, b=4 → height=1/(b-a)=0.25', color: '#888' }
+                },
+                scales: {
+                    x: { ticks: { maxTicksLimit: 10 }, title: { display: true, text: 'x' }},
+                    y: { beginAtZero: true, max: 0.4, title: { display: true, text: 'f(x)' }}
+                }
+            }
+        });
+
+        // Gamma Chart
+        const gammaX = Array.from({length: 80}, (_, i) => i * 0.25);
+        
+        new Chart(document.getElementById('gammaChart'), {
+            type: 'line',
+            data: {
+                labels: gammaX.map(x => x.toFixed(1)),
+                datasets: [{
+                    data: gammaX.map(x => {
+                        if (x <= 0) return 0;
+                        const k = 3, theta = 2;
+                        const lnGamma = (k - 0.5) * Math.log(k) - k + 0.5 * Math.log(2 * Math.PI);
+                        return Math.exp((k - 1) * Math.log(x) - x / theta - k * Math.log(theta) - lnGamma);
+                    }),
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'k=3, θ=2 → Mean=kθ=6', color: '#888' }
+                },
+                scales: {
+                    x: { ticks: { maxTicksLimit: 10 }, title: { display: true, text: 'x' }},
+                    y: { beginAtZero: true, title: { display: true, text: 'f(x)' }}
+                }
+            }
+        });
+
+        // Weibull Chart
+        const weibullX = Array.from({length: 60}, (_, i) => i * 0.1);
+        
+        new Chart(document.getElementById('weibullChart'), {
+            type: 'line',
+            data: {
+                labels: weibullX.map(x => x.toFixed(1)),
+                datasets: [{
+                    data: weibullX.map(x => {
+                        if (x <= 0) return 0;
+                        const k = 2, lambda = 2;
+                        return (k / lambda) * Math.pow(x / lambda, k - 1) * Math.exp(-Math.pow(x / lambda, k));
+                    }),
+                    borderColor: '#06b6d4',
+                    backgroundColor: 'rgba(6, 182, 212, 0.3)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'k=2 (wear-out), λ=2', color: '#888' }
+                },
+                scales: {
+                    x: { ticks: { maxTicksLimit: 10 }, title: { display: true, text: 'x (time to failure)' }},
+                    y: { beginAtZero: true, title: { display: true, text: 'f(x)' }}
+                }
+            }
+        });
+
+        // Triangular Chart
+        const triX = Array.from({length: 100}, (_, i) => i * 0.1);
+        
+        new Chart(document.getElementById('triangularChart'), {
+            type: 'line',
+            data: {
+                labels: triX.map(x => x.toFixed(1)),
+                datasets: [{
+                    data: triX.map(x => {
+                        const a = 1, c = 3, b = 8;
+                        if (x < a || x > b) return 0;
+                        if (x <= c) return 2 * (x - a) / ((b - a) * (c - a));
+                        return 2 * (b - x) / ((b - a) * (b - c));
+                    }),
+                    borderColor: '#f43f5e',
+                    backgroundColor: 'rgba(244, 63, 94, 0.3)',
+                    fill: true,
+                    tension: 0,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'a=1, c=3 (mode), b=8 → Mean=(1+3+8)/3=4', color: '#888' }
+                },
+                scales: {
+                    x: { ticks: { maxTicksLimit: 10 }, title: { display: true, text: 'x' }},
+                    y: { beginAtZero: true, title: { display: true, text: 'f(x)' }}
+                }
+            }
+        });
+    </script>
+</body>
+</html>
